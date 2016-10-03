@@ -757,6 +757,14 @@ module Searchkick
                     }
                   }
                 }
+              when :points
+                filters << {
+                    geo_polygon: {
+                        field => {
+                            points: value[:points]
+                        }
+                    }
+                }
               when :regexp # support for regexp queries without using a regexp ruby object
                 filters << {regexp: {field => {value: op_value}}}
               when :not # not equal
