@@ -193,7 +193,12 @@ module Searchkick
 
       if records.respond_to?(:primary_key) && records.primary_key
         # ActiveRecord
-        records.where(records.primary_key => ids)
+        where = records.where(records.primary_key => ids)
+        if scope = options[:scope]
+          where.send("#{scope}")
+        else
+          where
+        end
       elsif records.respond_to?(:all) && records.all.respond_to?(:for_ids)
         # Mongoid 2
         records.all.for_ids(ids)
@@ -202,6 +207,7 @@ module Searchkick
         records.queryable.for_ids(ids)
       elsif records.respond_to?(:unscoped) && [:preload, :eager_load].any? { |m| records.all.respond_to?(m) }
         # Nobrainer
+        p "OR HERE?"
         records.unscoped.where(:id.in => ids)
       else
         raise "Not sure how to load records"
